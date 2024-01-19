@@ -1,0 +1,25 @@
+WITH cte1 AS (
+                SELECT h.hacker_id as hacker_id, name as Name, COUNT(challenge_id) AS total_challenge, COUNT(*) OVER(PARTITION BY COUNT(Challenge_id)) as count_total
+            FROM hackers h
+            JOIN Challenges c
+                ON h.hacker_id = c.hacker_id
+            GROUP BY h.hacker_id, name
+            ORDER BY total_challenge DESC, h.hacker_id
+    ),
+    cte2 AS (
+                SELECT MAX(total) as max_total
+                FROM (SELECT COUNT(challenge_id) as total
+                        FROM Challenges
+                        GROUP BY hacker_id) as subq
+    )
+    
+SELECT hacker_id, Name, total_challenge
+FROM cte1
+WHERE total_challenge = (SELECT max_total
+                        from cte2)
+        OR
+        (total_challenge <> (SELECT max_total
+                        from cte2)
+            AND
+            count_total = 1        
+        )
