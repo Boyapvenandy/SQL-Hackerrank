@@ -1,0 +1,14 @@
+SELECT DISTINCT sq.X, sq.Y
+FROM (
+        SELECT X, Y, ROW_NUMBER() OVER() AS RN
+        FROM Functions
+    ) sq
+JOIN (
+        SELECT X, Y, ROW_NUMBER() OVER() AS RN
+        FROM Functions
+    ) sq2
+    ON sq.X = sq2.Y 
+        AND sq.Y = sq2.X 
+        AND sq.RN <> sq2.RN
+WHERE sq.X <= sq.Y
+ORDER BY sq.X
