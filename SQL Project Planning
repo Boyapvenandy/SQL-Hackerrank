@@ -1,0 +1,7 @@
+SELECT MIN(start_date), MAX(end_date)
+FROM (
+        SELECT start_date, end_date, start_date - ROW_NUMBER() OVER(ORDER BY start_date) as groupped
+        FROM Projects
+    ) as subquery
+GROUP BY groupped
+ORDER BY COUNT(groupped), MIN(start_date)
